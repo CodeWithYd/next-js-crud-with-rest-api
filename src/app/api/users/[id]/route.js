@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { updateUser, deleteUser } from "@/data-management";
+import connectMongoDB from "@/libs/mongodb";
+import User from "@/models/user";
+
 
 
 export const PUT = async(req)=> {
@@ -7,7 +9,8 @@ export const PUT = async(req)=> {
     const { userName } = await req.json();
 
     try {
-        updateUser({id, userName});
+        await connectMongoDB();
+        await User.findByIdAndUpdate(id, { userName });
         return NextResponse.json({ message: 'UPDATE SUCCESS'}, { status: 200})
 
     } catch (err) {
@@ -22,7 +25,8 @@ export const DELETE = async(req)=> {
     const id = req.url.split('users/')[1];
 
     try {
-        deleteUser(id);
+        await connectMongoDB();
+        await User.findByIdAndDelete(id);
         return NextResponse.json({ message: 'DELETE SUCCESS'}, { status: 200})
 
     } catch (err) {

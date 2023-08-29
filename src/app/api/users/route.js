@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
-import { users, addUser } from "@/data-management";
+import connectMongoDB from "@/libs/mongodb";
+import User from "@/models/user";
 
 export const GET = async()=> {
     try {
+        await connectMongoDB();
+
+        const users = await User.find();
 
         return NextResponse.json({ message: 'OK', data: users}, { status: 200})
 
@@ -19,7 +23,8 @@ export const POST = async(req)=> {
     const { userName } = await req.json();
 
     try {
-        addUser({id: Date.now().toString(), userName});
+        await connectMongoDB();
+        await User.create({ userName });
         
         return NextResponse.json({ message: 'SUCCESS'}, { status: 200})
 
